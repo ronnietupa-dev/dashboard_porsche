@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche | Executive Vision</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --porsche-red: #D5001C;
+            --porsche-red-glow: rgba(213, 0, 28, 0.4);
+            --luxury-black: #030303;
+            --glass-bg: rgba(15, 15, 15, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.04);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--luxury-black);
+            color: #E0E0E0;
+            overflow-x: hidden;
+        }
+        
+        /* Futuristic Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000000 70%);
+            z-index: -1;
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 80%);
+        }
+
+        /* High-End Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--porsche-red); }
+
+        /* Premium Glass Panels */
+        .premium-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.02);
+            border-radius: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .premium-glass:hover {
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.9), 0 0 20px 0 rgba(213, 0, 28, 0.05);
+        }
+
+        /* Typography */
+        .title-display {
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+        }
+
+        .kpi-value {
+            font-weight: 100;
+            letter-spacing: -0.02em;
+            background: linear-gradient(180deg, #FFFFFF 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kpi-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Futuristic Form Elements */
+        .hud-select {
+            appearance: none;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: #fff;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            font-weight: 300;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0 center;
+            background-size: 16px;
+        }
+
+        .hud-select:focus {
+            outline: none;
+            border-bottom-color: var(--porsche-red);
+            box-shadow: 0 4px 10px -4px var(--porsche-red-glow);
+        }
+
+        .hud-select option {
+            background-color: #111;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .glow-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--porsche-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--porsche-red);
+        }
+
+        /* Custom Button */
+        .btn-executive {
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-executive:hover {
+            color: #fff;
+            border-color: var(--porsche-red);
+            box-shadow: 0 0 15px rgba(213,0,28,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg"></div>
+
+    <!-- Minimalist Executive Header -->
+    <header class="border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+        <div class="container mx-auto px-8 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <!-- Porsche Typographic Logo -->
+                <div class="title-display text-xl text-white">
+                    PORSCHE
+                </div>
+                <div class="h-4 w-px bg-white/20"></div>
+                <div class="text-xs uppercase tracking-[0.2em] text-gray-400 font-light">
+                    Executive Dashboard
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="glow-dot"></div>
+                <span class="text-[0.65rem] uppercase tracking-widest text-gray-500">Live Data Center</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 flex flex-col gap-10">
+        
+        <!-- Command Center (Filters) -->
+        <section class="premium-glass p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <h2 class="text-xs uppercase tracking-[0.2em] text-gray-400">Parâmetros de Análise</h2>
+                <div class="h-px bg-white/5 flex-grow"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8 items-end">
+                <div class="w-full">
+                    <label class="block kpi-label mb-1">Modelo</label>
+                    <select id="filter-modelo" class="hud-select">
+                        <option value="ALL">Global (Todos)</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label class="block kpi-label mb-1">Ano Safra</label>
+                    <select id="filter-ano" class="hud-select">
+                        <option value="ALL">Todo o Período</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label class="block kpi-label mb-1">Praça (Cidade)</label>
+                    <select id="filter-cidade" class="hud-select">
+                        <option value="ALL">Todas as Regiões</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label class="block kpi-label mb-1">Estrutura Financeira</label>
+                    <select id="filter-pagamento" class="hud-select">
+                        <option value="ALL">Todos os Métodos</option>
+                    </select>
+                </div>
+                <div class="w-full flex justify-end">
+                    <button id="reset-filters" class="btn-executive py-3 px-8 w-full md:w-auto rounded-sm">
+                        Redefinir
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Executive Summary (KPIs) -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="premium-glass p-8 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-porsche-red to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <h3 class="kpi-label mb-4">Volume Operacional</h3>
+                <p id="kpi-volume" class="text-5xl kpi-value">0</p>
+                <div class="absolute bottom-4 right-6 text-xs text-gray-600 font-light tracking-widest">UNIDADES</div>
+            </div>
+            
+            <div class="premium-glass p-8 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <h3 class="kpi-label mb-4">Capital Movimentado</h3>
+                <p id="kpi-receita" class="text-5xl kpi-value">$0</p>
+            </div>
+            
+            <div class="premium-glass p-8 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <h3 class="kpi-label mb-4">Ticket Médio (MSRP)</h3>
+                <p id="kpi-ticket" class="text-5xl kpi-value">$0</p>
+            </div>
+            
+            <div class="premium-glass p-8 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <h3 class="kpi-label mb-4">Linha de Vanguarda</h3>
+                <p id="kpi-top-model" class="text-2xl font-light text-white mt-3 truncate tracking-wide">-</p>
+                <div class="mt-2 text-xs text-gray-500">Performance Líder</div>
+            </div>
+        </section>
+
+        <!-- Advanced Analytics Grid -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Main Chart: Performance by Model -->
+            <div class="premium-glass p-8 col-span-1 lg:col-span-2 flex flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-sm font-light tracking-widest text-white">HIERARQUIA DE MODELOS</h2>
+                        <p class="text-xs text-gray-500 tracking-wider mt-1">Volume de vendas segmentado por portfólio</p>
+                    </div>
+                </div>
+                <div class="flex-grow relative w-full h-[350px]">
+                    <canvas id="chartModels"></canvas>
+                </div>
+            </div>
+
+            <!-- AI / Exec Insights Engine -->
+            <div class="premium-glass p-8 col-span-1 flex flex-col relative overflow-hidden">
+                <!-- Decorative scanline -->
+                <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20"></div>
+                
+                <div class="flex items-center justify-between mb-8 relative z-10">
+                    <h2 class="text-sm font-light tracking-widest text-white">INTELIGÊNCIA DE MERCADO</h2>
+                    <svg class="w-4 h-4 text-porsche-red animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 6l6.5 13h-13L12 8z"/></svg>
+                </div>
+                
+                <div id="insights-container" class="space-y-6 text-sm text-gray-400 font-light leading-relaxed relative z-10">
+                    <!-- Gerado dinamicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Analytics -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-16">
+            
+            <!-- Chart: Trajetória Temporal -->
+            <div class="premium-glass p-8 flex flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-sm font-light tracking-widest text-white">EVOLUÇÃO POR SAFRA</h2>
+                        <p class="text-xs text-gray-500 tracking-wider mt-1">Adoção de mercado por ano de fabricação</p>
+                    </div>
+                </div>
+                <div class="flex-grow relative w-full h-[280px]">
+                    <canvas id="chartYears"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart: Perfil Financeiro -->
+            <div class="premium-glass p-8 flex flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-sm font-light tracking-widest text-white">COMPORTAMENTO FINANCEIRO</h2>
+                        <p class="text-xs text-gray-500 tracking-wider mt-1">Distribuição de modalidades de aquisição</p>
+                    </div>
+                </div>
+                <div class="flex-grow relative w-full h-[280px] flex justify-center">
+                    <canvas id="chartPayment"></canvas>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        // Configurações Globais do Chart.js para o visual Futurista/Luxury
+        Chart.defaults.color = '#555';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 11;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(5, 5, 5, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#fff';
+        Chart.defaults.plugins.tooltip.bodyColor = '#ccc';
+        Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,0.1)';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.padding = 16;
+        Chart.defaults.plugins.tooltip.cornerRadius = 2;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+
+        // Base de Dados Simulada (Baseada na amostra da planilha)
+        const rawData = [
+            { "ID": 6, "DATA": "INVALID", "NOME": "Michael Adams", "MODELO": "718 Cayman", "ANO": 2022, "VALOR": 79500, "PAGAMENTO": "Credit Card", "CIDADE": "Boston", "ESTADO": "MA" },
+            { "ID": 7, "DATA": "2024-03-14", "NOME": "SOPHIA Miller", "MODELO": "911 Turbo S", "ANO": 2024, "VALOR": 235000, "PAGAMENTO": "Wire Transfer", "CIDADE": "Seattle", "ESTADO": "WA" },
+            { "ID": 8, "DATA": "2024-04-18", "NOME": "Daniel-Jones", "MODELO": "Cayenne Coupe", "ANO": 2023, "VALOR": 112750, "PAGAMENTO": "Financing", "CIDADE": "Austin", "ESTADO": "TX" },
+            { "ID": 9, "DATA": "INVALID", "NOME": "Olivia Brown", "MODELO": "Macan S", "ANO": 2021, "VALOR": 68900, "PAGAMENTO": "Cash", "CIDADE": "Denver", "ESTADO": "CO" },
+            { "ID": 10, "DATA": "2024-05-22", "NOME": "Ethan Wilson", "MODELO": "Taycan 4S", "ANO": 2024, "VALOR": 121000, "PAGAMENTO": "Bank Transfer", "CIDADE": "Los Angeles", "ESTADO": "CA" },
+            { "ID": 11, "DATA": "2024-08-06", "NOME": "Ava Martinez", "MODELO": "Panamera 4", "ANO": 2023, "VALOR": 104500, "PAGAMENTO": "Credit Card", "CIDADE": "Miami", "ESTADO": "FL" },
+            { "ID": 12, "DATA": "2024-07-11", "NOME": "Noah Davis", "MODELO": "911 Carrera S", "ANO": 2020, "VALOR": 96300, "PAGAMENTO": "Lease", "CIDADE": "New York", "ESTADO": "NY" },
+            { "ID": 91, "DATA": "2024-03-10", "NOME": "Victor Lee", "MODELO": "718 Cayman", "ANO": 2023, "VALOR": 78900, "PAGAMENTO": "Debit Card", "CIDADE": "Seattle", "ESTADO": "WA" },
+            { "ID": 92, "DATA": "2027-04-02", "NOME": "Adam Hughes", "MODELO": "911 Turbo S", "ANO": 2026, "VALOR": 249300, "PAGAMENTO": "Wire Transfer", "CIDADE": "Boston", "ESTADO": "MA" },
+            { "ID": 93, "DATA": "INVALID", "NOME": "Julia Coleman", "MODELO": "Cayenne Coupe", "ANO": 2024, "VALOR": 108750, "PAGAMENTO": "Wire Transfer", "CIDADE": "Phoenix", "ESTADO": "AZ" },
+            { "ID": 94, "DATA": "INVALID", "NOME": "Caleb Simmons", "MODELO": "Macan Electric", "ANO": 2026, "VALOR": 92600, "PAGAMENTO": "Financing", "CIDADE": "Chicago", "ESTADO": "IL" },
+            { "ID": 95, "DATA": "2027-05-12", "NOME": "Ariana Price", "MODELO": "Taycan Turbo", "ANO": 2025, "VALOR": 164000, "PAGAMENTO": "ACH Payment", "CIDADE": "Dallas", "ESTADO": "TX" },
+            { "ID": 96, "DATA": "2027-05-27", "NOME": "Owen Rivera", "MODELO": "Panamera 4S", "ANO": 2024, "VALOR": 119000, "PAGAMENTO": "Credit Card", "CIDADE": "San Francisco", "ESTADO": "CA" },
+            { "ID": 97, "DATA": "INVALID", "NOME": "Nora Bennett", "MODELO": "911 GT3", "ANO": 2026, "VALOR": 232500, "PAGAMENTO": "Wire Transfer", "CIDADE": "Las Vegas", "ESTADO": "NV" },
+            { "ID": 98, "DATA": "2027-06-18", "NOME": "Isaac Turner", "MODELO": "Cayenne E-Hybrid", "ANO": 2023, "VALOR": 96800, "PAGAMENTO": "Lease", "CIDADE": "Charlotte", "ESTADO": "NC" },
+            { "ID": 101, "DATA": "2024-01-15", "NOME": "John Doe", "MODELO": "Macan S", "ANO": 2024, "VALOR": 72000, "PAGAMENTO": "Financing", "CIDADE": "Miami", "ESTADO": "FL" },
+            { "ID": 102, "DATA": "2024-02-20", "NOME": "Jane Smith", "MODELO": "911 Carrera S", "ANO": 2024, "VALOR": 115000, "PAGAMENTO": "Wire Transfer", "CIDADE": "Los Angeles", "ESTADO": "CA" },
+            { "ID": 103, "DATA": "2024-02-25", "NOME": "Bob Johnson", "MODELO": "Taycan 4S", "ANO": 2025, "VALOR": 125000, "PAGAMENTO": "Cash", "CIDADE": "New York", "ESTADO": "NY" },
+            { "ID": 104, "DATA": "2024-03-05", "NOME": "Alice Brown", "MODELO": "Cayenne Coupe", "ANO": 2026, "VALOR": 118000, "PAGAMENTO": "Lease", "CIDADE": "Chicago", "ESTADO": "IL" },
+            { "ID": 105, "DATA": "2024-03-12", "NOME": "Charlie Davis", "MODELO": "911 Turbo S", "ANO": 2026, "VALOR": 255000, "PAGAMENTO": "Wire Transfer", "CIDADE": "Los Angeles", "ESTADO": "CA" },
+            { "ID": 106, "DATA": "2024-04-01", "NOME": "Eva White", "MODELO": "Macan Electric", "ANO": 2026, "VALOR": 95000, "PAGAMENTO": "Financing", "CIDADE": "Seattle", "ESTADO": "WA" },
+            { "ID": 107, "DATA": "2024-04-15", "NOME": "Frank Green", "MODELO": "Panamera 4", "ANO": 2024, "VALOR": 108000, "PAGAMENTO": "Bank Transfer", "CIDADE": "Dallas", "ESTADO": "TX" },
+            { "ID": 108, "DATA": "2024-05-10", "NOME": "Grace Lee", "MODELO": "718 Cayman", "ANO": 2024, "VALOR": 82000, "PAGAMENTO": "Credit Card", "CIDADE": "Miami", "ESTADO": "FL" },
+            { "ID": 109, "DATA": "2024-05-20", "NOME": "Henry King", "MODELO": "Taycan Turbo", "ANO": 2025, "VALOR": 168000, "PAGAMENTO": "Wire Transfer", "CIDADE": "San Francisco", "ESTADO": "CA" },
+            { "ID": 110, "DATA": "2024-06-05", "NOME": "Ivy Chen", "MODELO": "911 GT3", "ANO": 2026, "VALOR": 240000, "PAGAMENTO": "Cash", "CIDADE": "Las Vegas", "ESTADO": "NV" }
+        ];
+
+        let currentData = [...rawData];
+        let charts = {};
+
+        // Funções Utilitárias
+        const formatMoney = (value) => {
+            if(value >= 1000000) return `$${(value/1000000).toFixed(1)}M`;
+            if(value >= 1000) return `$${(value/1000).toFixed(0)}K`;
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+        };
+
+        const getUniqueValues = (data, key) => [...new Set(data.map(item => item[key]))].sort();
+
+        // Inicialização de Filtros
+        const initFilters = () => {
+            const populateSelect = (id, values) => {
+                const select = document.getElementById(id);
+                values.forEach(val => select.appendChild(new Option(val, val)));
+            };
+
+            populateSelect('filter-modelo', getUniqueValues(rawData, 'MODELO'));
+            populateSelect('filter-ano', getUniqueValues(rawData, 'ANO').sort((a,b) => b - a));
+            populateSelect('filter-cidade', getUniqueValues(rawData, 'CIDADE'));
+            populateSelect('filter-pagamento', getUniqueValues(rawData, 'PAGAMENTO'));
+
+            ['modelo', 'ano', 'cidade', 'pagamento'].forEach(filter => {
+                document.getElementById(`filter-${filter}`).addEventListener('change', applyFilters);
+            });
+
+            document.getElementById('reset-filters').addEventListener('click', () => {
+                document.querySelectorAll('.hud-select').forEach(el => el.value = 'ALL');
+                applyFilters();
+            });
+        };
+
+        // Aplicação de Filtros
+        const applyFilters = () => {
+            const fModelo = document.getElementById('filter-modelo').value;
+            const fAno = document.getElementById('filter-ano').value;
+            const fCidade = document.getElementById('filter-cidade').value;
+            const fPagamento = document.getElementById('filter-pagamento').value;
+
+            currentData = rawData.filter(item => {
+                return (fModelo === 'ALL' || item.MODELO === fModelo) &&
+                       (fAno === 'ALL' || item.ANO.toString() === fAno) &&
+                       (fCidade === 'ALL' || item.CIDADE === fCidade) &&
+                       (fPagamento === 'ALL' || item.PAGAMENTO === fPagamento);
+            });
+
+            updateDashboard();
+        };
+
+        const groupBy = (data, key) => data.reduce((acc, item) => {
+            acc[item[key]] = (acc[item[key]] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Processamento Central
+        const updateDashboard = () => {
+            const volume = currentData.length;
+            const receita = currentData.reduce((sum, item) => sum + item.VALOR, 0);
+            const ticket = volume > 0 ? receita / volume : 0;
+            
+            const modelsCount = groupBy(currentData, 'MODELO');
+            const topModel = Object.entries(modelsCount).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+
+            // Animando contadores
+            document.getElementById('kpi-volume').textContent = volume;
+            document.getElementById('kpi-receita').textContent = formatMoney(receita);
+            document.getElementById('kpi-ticket').textContent = formatMoney(ticket);
+            document.getElementById('kpi-top-model').textContent = topModel;
+
+            updateCharts();
+            generateInsights();
+        };
+
+        const renderChart = (canvasId, config) => {
+            if (charts[canvasId]) charts[canvasId].destroy();
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            charts[canvasId] = new Chart(ctx, config);
+            return ctx; // Return context if needed for gradients
+        };
+
+        const updateCharts = () => {
+            // 1. Bar Chart (Modelos) - Efeito Glow
+            const modelsData = Object.entries(groupBy(currentData, 'MODELO')).sort((a, b) => b[1] - a[1]);
+            const ctxModels = document.getElementById('chartModels').getContext('2d');
+            
+            // Gradiente para a barra principal
+            const gradientRed = ctxModels.createLinearGradient(0, 0, 0, 400);
+            gradientRed.addColorStop(0, '#D5001C');
+            gradientRed.addColorStop(1, 'rgba(213, 0, 28, 0.1)');
+
+            const gradientGray = ctxModels.createLinearGradient(0, 0, 0, 400);
+            gradientGray.addColorStop(0, '#444');
+            gradientGray.addColorStop(1, 'rgba(68, 68, 68, 0.1)');
+
+            renderChart('chartModels', {
+                type: 'bar',
+                data: {
+                    labels: modelsData.map(m => m[0]),
+                    datasets: [{
+                        label: 'Unidades Comercializadas',
+                        data: modelsData.map(m => m[1]),
+                        backgroundColor: modelsData.map((_, i) => i === 0 ? gradientRed : gradientGray),
+                        borderWidth: 0,
+                        borderRadius: 2,
+                        barPercentage: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { display: false, beginAtZero: true }, // Esconde grade Y para visual limpo
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#888', font: { size: 10, family: 'Inter' } } 
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 2. Line Chart (Anos) - Efeito HUD
+            const yearsData = Object.entries(groupBy(currentData, 'ANO')).sort((a,b) => a[0] - b[0]);
+            const ctxYears = document.getElementById('chartYears').getContext('2d');
+            
+            const gradientLine = ctxYears.createLinearGradient(0, 0, 0, 300);
+            gradientLine.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+            gradientLine.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            renderChart('chartYears', {
+                type: 'line',
+                data: {
+                    labels: yearsData.map(y => y[0]),
+                    datasets: [{
+                        label: 'Volume de Mercado',
+                        data: yearsData.map(y => y[1]),
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        backgroundColor: gradientLine,
+                        fill: true,
+                        pointBackgroundColor: '#000',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.4 // Curva suave
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { display: false, beginAtZero: true },
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // 3. Doughnut Chart (Pagamentos) - Minimalista
+            const paymentData = groupBy(currentData, 'PAGAMENTO');
+            renderChart('chartPayment', {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(paymentData),
+                    datasets: [{
+                        data: Object.values(paymentData),
+                        backgroundColor: ['#D5001C', '#FFFFFF', '#555555', '#333333', '#1A1A1A'],
+                        borderWidth: 2,
+                        borderColor: '#050505',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '80%', // Anel ultra fino
+                    plugins: {
+                        legend: { 
+                            position: 'right', 
+                            labels: { color: '#aaa', usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } 
+                        }
+                    }
+                }
+            });
+        };
+
+        // Motor de Insights Executivos
+        const generateInsights = () => {
+            const container = document.getElementById('insights-container');
+            container.innerHTML = '';
+
+            if (currentData.length === 0) {
+                container.innerHTML = '<p class="italic text-gray-600">Parâmetros insuficientes para projeção analítica.</p>';
+                return;
+            }
+
+            const getTopKey = (dataObj) => Object.entries(dataObj).sort((a,b) => b[1] - a[1])[0]?.[0] || "N/A";
+
+            const topCity = getTopKey(groupBy(currentData, 'CIDADE'));
+            const topModelCity = getTopKey(groupBy(currentData.filter(i => i.CIDADE === topCity), 'MODELO'));
+            const topYear = getTopKey(groupBy(currentData, 'ANO'));
+            const topPay = getTopKey(groupBy(currentData, 'PAGAMENTO'));
+
+            const createInsight = (title, text, isHighlight = false) => `
+                <div class="relative pl-4 border-l ${isHighlight ? 'border-porsche-red' : 'border-gray-800'} transition-colors duration-300 hover:border-white">
+                    <h4 class="text-white text-xs uppercase tracking-widest mb-1 font-medium">${title}</h4>
+                    <p class="text-gray-500 text-sm leading-relaxed">${text}</p>
+                </div>
+            `;
+
+            container.innerHTML = `
+                ${createInsight('Proeminência Geográfica', `O polo de <strong>${topCity}</strong> concentra a maior tração atual. Nesta localidade, o modelo <span class="text-white font-medium">${topModelCity}</span> demonstra aderência superior, sugerindo um alinhamento ideal com o perfil demográfico da região.`, true)}
+                
+                ${createInsight('Ciclo de Produto', `A geração de <strong>${topYear}</strong> lidera o escoamento no período analisado. Recomenda-se alocação estratégica de inventário para suprir esta demanda contínua.`)}
+                
+                ${createInsight('Estrutura de Capital', `A liquidação via <strong>${topPay}</strong> é o veículo financeiro preferencial dos clientes ativos, indicando uma janela de oportunidade para produtos financeiros atrelados a esta modalidade.`)}
+            `;
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initFilters();
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>
